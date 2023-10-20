@@ -2,11 +2,13 @@ from PyQt6.QtWidgets import (QMainWindow, QTextEdit,
                              QLineEdit, QPushButton,
                              QApplication)
 import sys
-
+from backend import Chatbot
 
 class ChatbotWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        self.chatbot = Chatbot()
 
         self.setMinimumSize(700, 500)
 
@@ -22,9 +24,23 @@ class ChatbotWindow(QMainWindow):
         # Add the send button
         self.button = QPushButton("Send", self)
         self.button.setGeometry(500, 340, 100, 40)
+        self.button.clicked.connect(self.send_message)
 
         self.show()
 
+    def send_message(self):
+        user_input = self.input_field.text().strip()
+        self.chat_area.append(f"<p style='color:#333333'>Me: {user_input}</p>")
+        self.input_field.clear()
+
+        chatbot_persona = """
+        Respond as if you were a highly knowledgeable coder in Python, SQL, R, 
+        and other data analytics-oriented programming languages, with a talent 
+        for instructing students and explaining things thoroughly.
+        """
+
+        response = self.chatbot.get_response('gpt-3.5-turbo', 1000, user_input, chatbot_persona)
+        self.chat_area.append(f"<p style='color:#333333; background-color: #E9E9E9'>Bot: {response}</p>")
 
 app = QApplication(sys.argv)
 main_window = ChatbotWindow()
