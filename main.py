@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import (QMainWindow, QTextEdit,
                              QApplication)
 import sys
 from backend import Chatbot
+import threading
 
 class ChatbotWindow(QMainWindow):
     def __init__(self):
@@ -20,6 +21,7 @@ class ChatbotWindow(QMainWindow):
         # Add input field widget
         self.input_field = QLineEdit(self)
         self.input_field.setGeometry(10, 340, 480, 40)
+        self.input_field.returnPressed.connect(self.send_message)
 
         # Add the send button
         self.button = QPushButton("Send", self)
@@ -38,6 +40,16 @@ class ChatbotWindow(QMainWindow):
         and other data analytics-oriented programming languages, with a talent 
         for instructing students and explaining things thoroughly.
         """
+
+        thread = threading.Thread(target=self.get_bot_response, args=(user_input, ))
+        thread.start()
+
+    def get_bot_response(self, user_input):
+        chatbot_persona = """
+                Respond as if you were a highly knowledgeable coder in Python, SQL, R, 
+                and other data analytics-oriented programming languages, with a talent 
+                for instructing students and explaining things thoroughly.
+                """
 
         response = self.chatbot.get_response('gpt-3.5-turbo', 1000, user_input, chatbot_persona)
         self.chat_area.append(f"<p style='color:#333333; background-color: #E9E9E9'>Bot: {response}</p>")
